@@ -1,0 +1,39 @@
+# Makefile for Xeon Phi 7120P Peak Performance Test Suite
+# Usage: make -f Makefile.peak
+#
+# Requires: ICC 16.0+ with -mmic support
+# Environment:
+#   source /opt/mpss/3.8.6/environment-setup-k1om-mpss-linux
+#   export PATH=/opt/intel/bin:$$PATH
+
+CC      = icc
+CFLAGS  = -std=c99 -mmic -O3 -openmp
+LDFLAGS = -mmic -openmp
+
+TARGETS = phi_stream_bench.mic \
+          phi_peak_fp64.mic \
+          phi_peak_fp32.mic \
+          phi_peak_dgemm.mic
+
+all: $(TARGETS)
+
+phi_stream_bench.mic: phi_stream_bench.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+phi_peak_fp64.mic: phi_peak_fp64.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+phi_peak_fp32.mic: phi_peak_fp32.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+phi_peak_dgemm.mic: phi_peak_dgemm.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+clean:
+	rm -f $(TARGETS)
+
+deply:
+	@echo "scp *.mic mic0:/tmp/"
+	@echo "ssh mic0 'cd /tmp && for f in phi_*.mic; do echo === Running \$$f ===; ./\$$f; done'"
+
+.PHONY: all clean deploy
