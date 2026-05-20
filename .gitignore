@@ -1,0 +1,17 @@
+# Large binaries / archives
+mpss-*.tar
+psxe_install/
+
+# Compiled binaries (keep .c source only)
+saxpy_bench
+saxpy_bench_vec
+matmul_bench
+matmul_bench_vec
+
+# IDE / tools
+.deepseek/
+
+# Temporary
+/tmp/
+*.o
+*.mic
