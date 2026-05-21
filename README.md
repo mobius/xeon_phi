@@ -117,10 +117,36 @@ Source: `phi_peak_fp64.c`, `phi_peak_fp32.c`, `phi_stream_bench.c`, `phi_peak_dg
 │   └── plan/
 │       └── 20260520_052053_peak_performance_test_plan.md
 │
+├── tests/                             # Best-practice verification tests
+│   ├── orsl_multi_proc/               # ORSL multi-process offload test
+│   ├── icc_gcc_compat/                # ICC/GCC mixed compilation test
+│   ├── openmp_dual_lib/               # OpenMP dual-library conflict demo
+│   ├── cpp_cross_abi/                 # C++ cross-compiler exception test
+│   ├── mic_ldpath_verify/             # MIC library path verification
+│   └── Makefile                       # Build & run all tests
+│
 ├── psxe_install/                      # ICC 16.0 installer (gitignored)
 ├── mpss-3.8.6-linux.tar               # MPSS 3.8.6 distribution (gitignored)
 └── mpss-src-3.8.6.tar                 # MPSS 3.8.6 source (gitignored)
 ```
+
+## Best-Practice Test Suite
+
+Reproducible tests for ICC/GCC coexistence and offload behavior:
+
+```bash
+cd tests
+make all    # Build all tests (ICC via podman)
+make test   # Run all tests
+```
+
+| Test | What it verifies |
+|------|------------------|
+| `orsl_multi_proc` | Multi-process offload works without ORSL on single-card setup |
+| `icc_gcc_compat` | GCC OpenMP objects link correctly into ICC binaries via `libiomp5.so` |
+| `openmp_dual_lib` | Linking both `libiomp5.so` and `libgomp.so` causes runtime conflicts |
+| `cpp_cross_abi` | C++ exceptions thrown by GCC code are catchable by ICC code |
+| `mic_ldpath_verify` | Offload requires `MIC_LD_LIBRARY_PATH` pointing to host-visible ICC MIC libs |
 
 ## Key Findings
 
@@ -128,6 +154,9 @@ Source: `phi_peak_fp64.c`, `phi_peak_fp32.c`, `phi_stream_bench.c`, `phi_peak_dg
 2. **COI library is functional** — device enumeration works after complete MPSS installation.
 3. **OpenMP offload is the recommended path** — ICC 16.0 supports `#pragma omp target` with full MIC offload.
 4. **liboffloadmic is infeasible** — project only implements emulator, hardcoded GCC-specific syntax, no native COI option.
+5. **ORSL is not required for single-card setups** — `OFFLOAD_ENABLE_ORSL=1` has no benefit with one 7120P.
+6. **Never link both OpenMP libraries** — use `libiomp5.so` only; it provides GCC ABI compatibility.
+7. **Container ICC needs MIC lib copy-out** — host cannot see `/opt/intel` inside podman; copy `intel64_lin_mic/` libs to host and set `MIC_LD_LIBRARY_PATH`.
 
 ## Quick Reference
 

@@ -8,6 +8,11 @@ saxpy_bench_vec
 matmul_bench
 matmul_bench_vec
 
+# Temporary test binaries in project root
+simple_offload
+test_orsl_host
+test_host_offload.c
+
 # IDE / tools
 .deepseek/
 
@@ -15,3 +20,14 @@ matmul_bench_vec
 /tmp/
 *.o
 *.mic
+
+# ICC MIC runtime libraries copied from container
+icc_mic_libs/
+
+# Test binaries (source only in repo)
+tests/*/test_*
+!tests/*/*.c
+!tests/*/*.cpp
+!tests/*/*.sh
+!tests/*/*.md
+!tests/*/Makefile
