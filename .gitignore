@@ -31,3 +31,8 @@ tests/*/test_*
 !tests/*/*.sh
 !tests/*/*.md
 !tests/*/Makefile
+
+# Container exports (large binary images)
+container/*.tar.gz
+container/*.tar
+container/export.log

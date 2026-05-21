@@ -148,6 +148,25 @@ make test   # Run all tests
 | `cpp_cross_abi` | C++ exceptions thrown by GCC code are catchable by ICC code |
 | `mic_ldpath_verify` | Offload requires `MIC_LD_LIBRARY_PATH` pointing to host-visible ICC MIC libs |
 
+
+## Container Environment
+
+A pre-configured container with ICC 16.0 + TBB 4.4 is available:
+
+```bash
+cd container
+./export-import.sh import   # Import from tar.gz
+./export-import.sh run      # Start dev environment
+```
+
+Or build from scratch (requires PSXE 2016 installer):
+
+```bash
+cd container
+./build.sh
+```
+
+See [container/README.md](container/README.md) for details.
 ## Key Findings
 
 1. **MPSS 3.8.6 works on Rocky 8.10** — but requires installing `mpss-core`, `mpss-offload`, `libscif0`, `libmicmgmt0` in addition to the basic packages.
