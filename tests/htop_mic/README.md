@@ -148,6 +148,39 @@ error while loading shared libraries: libncurses.so.6
 
 **解决:** 将交叉编译的 `libncurses.so.6.4` 一并复制到 mic0，并设置 `LD_LIBRARY_PATH`。
 
+### 问题 3: `Error opening terminal: xterm-256color`
+
+**现象:**
+```bash
+$ ssh -t mic0 "LD_LIBRARY_PATH=/tmp /tmp/htop"
+Error opening terminal: xterm-256color.
+```
+
+**原因:** mic0 的精简 Linux 系统没有 terminfo 数据库，ncurses 无法识别终端类型。
+
+**解决:** 将 host 的 `xterm-256color` terminfo 文件复制到 mic0：
+
+```bash
+# 复制 terminfo 到 mic0
+scp /usr/share/terminfo/x/xterm-256color mic0:/tmp/xterm-256color
+ssh mic0 "mkdir -p /tmp/terminfo/x && mv /tmp/xterm-256color /tmp/terminfo/x/"
+
+# 运行 htop（指定 TERMINFO 路径）
+ssh -t mic0 "LD_LIBRARY_PATH=/tmp TERMINFO=/tmp/terminfo TERM=xterm-256color /tmp/htop"
+```
+
+**替代方案:** 使用 `TERM=xterm`（部分系统支持）：
+
+```bash
+ssh -t mic0 "LD_LIBRARY_PATH=/tmp TERM=xterm /tmp/htop"
+```
+
+**提示:** 如果终端显示乱码，加 `-C` 参数禁用颜色：
+
+```bash
+ssh -t mic0 "LD_LIBRARY_PATH=/tmp TERMINFO=/tmp/terminfo TERM=xterm-256color /tmp/htop -C"
+```
+
 ---
 
 ## 运行截图
