@@ -127,17 +127,22 @@ Source: `phi_peak_fp64.c`, `phi_peak_fp32.c`, `phi_stream_bench.c`, `phi_peak_dg
 ├── README.md                          # This file
 ├── .gitignore                         # Excludes *.mic binaries, mpss tarballs
 │
-├── phi_peak_fp64.c                    # FP64 FMA peak benchmark
-├── phi_peak_fp32.c                    # FP32 FMA peak benchmark
-├── phi_peak_dgemm.c                   # DGEMM baseline benchmark
-├── phi_stream_bench.c                 # STREAM bandwidth benchmark
-├── Makefile.peak                      # Build automation for benchmarks
-├── build_peak_tests.sh                # Build script
-│
-├── saxpy_bench.c                      # Early SAXPY experiment (historical)
-├── saxpy_kernel.c                     # SAXPY kernel (historical)
-├── matmul_bench.c                     # Early matmul experiment (historical)
-│
+├── tests/
+│   ├── perf/                            # Peak performance benchmarks
+│   │   ├── phi_peak_fp64.c              # FP64 FMA peak benchmark
+│   │   ├── phi_peak_fp32.c              # FP32 FMA peak benchmark
+│   │   ├── phi_peak_dgemm.c             # DGEMM baseline benchmark
+│   │   ├── phi_stream_bench.c           # STREAM bandwidth benchmark
+│   │   ├── Makefile.peak                # Build automation
+│   │   ├── build_peak_tests.sh          # Build script
+│   │   └── README.md                    # Benchmark guide
+│   │
+│   ├── legacy/                          # Early experiments (historical)
+│   │   ├── saxpy_bench.c                # SAXPY with pthreads
+│   │   ├── saxpy_kernel.c               # SAXPY kernel
+│   │   ├── matmul_bench.c               # Matmul with pthreads
+│   │   └── README.md                    # Legacy notes
+│   │
 ├── docs/
 │   ├── research/
 │   │   ├── 20260520_214838_liboffloadmic_detailed_assessment.md

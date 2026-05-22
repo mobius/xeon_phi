@@ -128,17 +128,22 @@ Host 端使用 TBB 进行数据准备，MIC 端通过 `#pragma offload` 使用 O
 ├── README_cn.md                       # 中文版本
 ├── .gitignore                         # 排除 *.mic 二进制文件, mpss 压缩包
 │
-├── phi_peak_fp64.c                    # FP64 FMA 峰值基准测试
-├── phi_peak_fp32.c                    # FP32 FMA 峰值基准测试
-├── phi_peak_dgemm.c                   # DGEMM 基线基准测试
-├── phi_stream_bench.c                 # STREAM 带宽基准测试
-├── Makefile.peak                      # 基准测试构建自动化
-├── build_peak_tests.sh                # 构建脚本
-│
-├── saxpy_bench.c                      # 早期 SAXPY 实验 (历史)
-├── saxpy_kernel.c                     # SAXPY 内核 (历史)
-├── matmul_bench.c                     # 早期 matmul 实验 (历史)
-│
+├── tests/
+│   ├── perf/                            # 峰值性能基准测试
+│   │   ├── phi_peak_fp64.c              # FP64 FMA 峰值基准测试
+│   │   ├── phi_peak_fp32.c              # FP32 FMA 峰值基准测试
+│   │   ├── phi_peak_dgemm.c             # DGEMM 基线基准测试
+│   │   ├── phi_stream_bench.c           # STREAM 带宽基准测试
+│   │   ├── Makefile.peak                # 构建自动化
+│   │   ├── build_peak_tests.sh          # 构建脚本
+│   │   └── README.md                    # 基准测试指南
+│   │
+│   ├── legacy/                          # 早期实验 (历史)
+│   │   ├── saxpy_bench.c                # 使用 pthreads 的 SAXPY
+│   │   ├── saxpy_kernel.c               # SAXPY 内核
+│   │   ├── matmul_bench.c               # 使用 pthreads 的矩阵乘法
+│   │   └── README.md                    # 历史说明
+│   │
 ├── docs/
 │   ├── research/
 │   │   ├── 20260520_214838_liboffloadmic_detailed_assessment.md
