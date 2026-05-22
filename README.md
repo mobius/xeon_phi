@@ -24,6 +24,8 @@
 | OpenMP offload | ICC 16.0 | ✅ Verified (result=42, vector add correct) |
 | Intel LEO offload | ICC 16.0 | ✅ Verified |
 | micnativeloadex | 3.8.6 | ✅ Verified (561 GFLOPS FP64) |
+| Intel TBB 4.4 | ICC 16.0 | ✅ Installed & verified (MIC native) |
+| Intel MPI | 5.1 | ✅ Available (MIC cross-compile verified) |
 | liboffloadmic | GCC 5.3.0 | ❌ Infeasible (emulator-only, GCC-specific) |
 
 ## Verified Programming Models
@@ -74,6 +76,39 @@ ssh mic0 /tmp/prog.mic
 micnativeloadex prog.mic -d 0 -t 60
 ```
 
+### 4. MIC Native Parallel Models (6 verified)
+
+All compiled with `-mmic` and executed on mic0 via `micnativeloadex`:
+
+| Model | File | Threads/Ranks | Result |
+|-------|------|--------------|--------|
+| POSIX Threads | `examples/mic_parallel/01_pthreads.c` | 244 | ✅ 0.53s, PASSED |
+| OpenMP | `examples/mic_parallel/02_openmp.c` | 240 auto | ✅ 0.26s, PASSED |
+| Intel Cilk Plus | `examples/mic_parallel/03_cilkplus.cpp` | work-stealing | ✅ PASSED |
+| Intel TBB | `examples/mic_parallel/04_tbb.cpp` | work-stealing | ✅ PASSED |
+| Intel MKL | `examples/mic_parallel/05_mkl.cpp` | 240 auto | ✅ 45.7 GFLOPS, PASSED |
+| Intel MPI | `examples/mic_parallel/06_mpi.c` | 1+ rank | ✅ single-rank PASSED |
+
+See [examples/mic_parallel/README.md](examples/mic_parallel/README.md) for build instructions.
+
+### 5. Host TBB + MIC OpenMP Hybrid
+
+Host uses TBB for data prep, MIC uses OpenMP for compute via `#pragma offload`:
+
+```cpp
+// Host: TBB
+ tbb::parallel_for(...);
+
+// MIC: OpenMP (TBB cannot be used inside offload blocks)
+#pragma offload target(mic) in(a[0:N]) out(c[0:N])
+{
+    #pragma omp parallel for
+    for (int i = 0; i < N; i++) c[i] = ...;
+}
+```
+
+See [examples/tbb_mic/README.md](examples/tbb_mic/README.md) for full details.
+
 ## Peak Performance Benchmarks
 
 | Test | Measured | Theory | Efficiency |
@@ -82,8 +117,9 @@ micnativeloadex prog.mic -d 0 -t 60
 | FP32 FMA | **1,170 GFLOPS** | 2,416 GFLOPS | 48.4% |
 | STREAM Copy | **157 GB/s** | 352 GB/s | 44.7% |
 | DGEMM 2048 | **63 GFLOPS** | 1,208 GFLOPS | 5.2% |
+| MKL DGEMM 2000 (MIC native) | **45.7 GFLOPS** | 1,208 GFLOPS | 3.8% |
 
-Source: `phi_peak_fp64.c`, `phi_peak_fp32.c`, `phi_stream_bench.c`, `phi_peak_dgemm.c`
+Source: `phi_peak_fp64.c`, `phi_peak_fp32.c`, `phi_stream_bench.c`, `phi_peak_dgemm.c`, `examples/mic_parallel/05_mkl.cpp`
 
 ## Project Structure
 
@@ -194,6 +230,8 @@ See [container/README.md](container/README.md) for details.
 5. **ORSL is not required for single-card setups** — `OFFLOAD_ENABLE_ORSL=1` has no benefit with one 7120P.
 6. **Never link both OpenMP libraries** — use `libiomp5.so` only; it provides GCC ABI compatibility.
 7. **Container ICC needs MIC lib copy-out** — host cannot see `/opt/intel` inside podman; copy `intel64_lin_mic/` libs to host and set `MIC_LD_LIBRARY_PATH`.
+8. **TBB + `#pragma offload` is infeasible on KNC** — ICC 16.0 MIC compiler fails to inline class ctors/dtors in `target(mic)` code, causing link errors for TBB symbols. TBB can only run on MIC via pure native (`-mmic`) binaries, not inside offload blocks.
+9. **ICC 16.0 MIC compiler does not support C++11 lambdas** — use functor classes instead of `[&](...){...}` when compiling with `-mmic` for TBB or Cilk Plus code.
 
 ## Quick Reference
 
@@ -207,6 +245,8 @@ See [container/README.md](container/README.md) for details.
 | Compile OpenMP offload | `icc -qopenmp -qoffload=optional ...` |
 | Run via micnativeloadex | `micnativeloadex prog.mic -d 0 -t 60` |
 | Run on mic0 via SSH | `ssh mic0 /tmp/prog.mic` |
+| Run MIC parallel examples | `cd examples/mic_parallel && make all && make run-all` |
+| Run TBB examples | `cd examples/tbb_mic && make all && make run-mic` |
 
 ## License
 
