@@ -109,13 +109,31 @@ Source: `phi_peak_fp64.c`, `phi_peak_fp32.c`, `phi_stream_bench.c`, `phi_peak_dg
 │   │   ├── 20260520_052053_peak_performance_testing_theory.md
 │   │   ├── ESC4000G4_7120P_Final_Assessment.md
 │   │   ├── Xeon_Phi_7120P_Specific_Assessment.md
-│   │   └── Xeon_Phi_Addon_Assessment.md
+│   │   ├── Xeon_Phi_Addon_Assessment.md
+│   │   └── 20260522_020600_tbb_offload_inlining_bug.md  # TBB+offload 不可行根因
 │   ├── impl/
 │   │   ├── 20260520_231500_xeon_phi_offload_guide.md    # ⭐ Main guide
 │   │   ├── 20260520_052053_peak_performance_implementation.md
 │   │   └── 20260520_055400_peak_performance_verification.md
 │   └── plan/
 │       └── 20260520_052053_peak_performance_test_plan.md
+│
+├── examples/                          # Verified runnable examples
+│   ├── mic_parallel/                  # 6 parallel programming models on MIC
+│   │   ├── 01_pthreads.c              # POSIX Threads
+│   │   ├── 02_openmp.c                # OpenMP
+│   │   ├── 03_cilkplus.cpp            # Intel Cilk Plus
+│   │   ├── 04_tbb.cpp                 # Intel TBB
+│   │   ├── 05_mkl.cpp                 # Intel MKL auto-threading
+│   │   ├── 06_mpi.c                   # Intel MPI
+│   │   ├── Makefile                   # Build & run all examples
+│   │   └── README.md                  # Usage guide for all 6 models
+│   └── tbb_mic/                       # TBB on MIC usage guide
+│       ├── example1_parallel_for.cpp
+│       ├── example2_parallel_reduce.cpp
+│       ├── example3_host_tbb_mic_omp.cpp
+│       ├── Makefile
+│       └── README.md
 │
 ├── tests/                             # Best-practice verification tests
 │   ├── orsl_multi_proc/               # ORSL multi-process offload test
