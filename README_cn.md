@@ -178,6 +178,12 @@ Host 端使用 TBB 进行数据准备，MIC 端通过 `#pragma offload` 使用 O
 │       └── README.md
 │
 ├── tests/                             # 最佳实践验证测试
+│   ├── perf/                          # 峰值性能基准测试
+│   ├── legacy/                        # 早期实验 (历史)
+│   ├── htop_mic/                      # 为 MIC 交叉编译的 htop 3.2.2
+│   │   ├── htop.mic                   # htop 可执行文件 (KNC)
+│   │   ├── libncurses.so.6.4          # MIC 的 ncurses 共享库
+│   │   └── README.md                  # 交叉编译指南
 │   ├── orsl_multi_proc/               # ORSL 多进程 offload 测试
 │   ├── icc_gcc_compat/                # ICC/GCC 混合编译测试
 │   ├── openmp_dual_lib/               # OpenMP 双库冲突演示

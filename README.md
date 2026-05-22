@@ -177,6 +177,12 @@ Source: `phi_peak_fp64.c`, `phi_peak_fp32.c`, `phi_stream_bench.c`, `phi_peak_dg
 │       └── README.md
 │
 ├── tests/                             # Best-practice verification tests
+│   ├── perf/                          # Peak performance benchmarks
+│   ├── legacy/                        # Early experiments (historical)
+│   ├── htop_mic/                      # htop 3.2.2 cross-compiled for MIC
+│   │   ├── htop.mic                   # htop binary (KNC)
+│   │   ├── libncurses.so.6.4          # ncurses shared lib for MIC
+│   │   └── README.md                  # Cross-compile guide
 │   ├── orsl_multi_proc/               # ORSL multi-process offload test
 │   ├── icc_gcc_compat/                # ICC/GCC mixed compilation test
 │   ├── openmp_dual_lib/               # OpenMP dual-library conflict demo
