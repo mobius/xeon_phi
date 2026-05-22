@@ -1,7 +1,7 @@
 #include <stddef.h>
 
 void saxpy_vec(double *A, double *B, double s, int n) {
-    if (n < 8) { for(int i=0;i<n;i++) A[i]=s*A[i]+B[i]; return; }
+    if (n < 8) { int i; for(i=0;i<n;i++) A[i]=s*A[i]+B[i]; return; }
     int i;
     double *a = A, *b = B;
     __asm__ ("vbroadcastsd %[scalar], %%zmm1" : : [scalar] "m" (s) : "zmm1");

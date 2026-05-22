@@ -44,3 +44,33 @@
 1. **历史记录**: 展示项目从早期实验到完整测试套件的演进
 2. **参考对比**: 对比 pthreads vs OpenMP、8线程 vs 244 线程的性能差异
 3. **教学价值**: 最简单的 MIC 交叉编译示例，无需复杂环境
+
+## 已知问题与修复
+
+### C99 `for(int i=0;...)` 不兼容
+
+ICC 16.0 默认使用 C89 模式，不支持循环内变量声明。
+
+**修复**: 将 `for(int i=...)` 改为 `int i; for(i=...)`。
+
+受影响文件:
+- `saxpy_kernel.c`
+- `matmul_bench.c`
+
+### `aligned_alloc` 在 MIC 上不可用
+
+MIC 的 glibc (~2.14) 不支持 C11 的 `aligned_alloc` (需 glibc 2.16+)。
+
+**修复**: 使用 POSIX 标准的 `posix_memalign` 替代。
+
+受影响文件:
+- `matmul_bench.c`
+
+### saxpy_bench 需要链接 saxpy_kernel
+
+`saxpy_bench.c` 通过 `extern` 引用 `saxpy_vec()`，该函数定义在 `saxpy_kernel.c` 中。
+
+**编译命令**:
+```bash
+icc -mmic -O2 -o saxpy_bench.mic saxpy_bench.c saxpy_kernel.c -lpthread
+```

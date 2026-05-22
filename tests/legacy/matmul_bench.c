@@ -23,11 +23,12 @@ void* matmul_thread(void* arg) {
 
 int main() {
     printf("Matrix Mul 2048x2048, %d threads\n", NUM_THREADS);
-    double *A = (double*)aligned_alloc(64, N*N*sizeof(double));
-    double *B = (double*)aligned_alloc(64, N*N*sizeof(double));
-    double *C = (double*)aligned_alloc(64, N*N*sizeof(double));
+    double *A, *B, *C;
+    posix_memalign((void**)&A, 64, N*N*sizeof(double));
+    posix_memalign((void**)&B, 64, N*N*sizeof(double));
+    posix_memalign((void**)&C, 64, N*N*sizeof(double));
     memset(C, 0, N*N*sizeof(double));
-    for(int i=0; i<N*N; i++) { A[i]=1.0; B[i]=1.0; }
+    int i; for(i=0; i<N*N; i++) { A[i]=1.0; B[i]=1.0; }
 
     pthread_t th[NUM_THREADS];
     thread_arg args[NUM_THREADS];
@@ -35,14 +36,14 @@ int main() {
     struct timeval tv1, tv2;
     gettimeofday(&tv1, NULL);
 
-    for(int t=0; t<NUM_THREADS; t++) {
+    int t; for(t=0; t<NUM_THREADS; t++) {
         args[t].tid = t;
         args[t].start = t * rows_per;
         args[t].end = (t==NUM_THREADS-1) ? N : (t+1)*rows_per;
         args[t].A = A; args[t].B = B; args[t].C = C;
         pthread_create(&th[t], NULL, matmul_thread, &args[t]);
     }
-    for(int t=0; t<NUM_THREADS; t++) pthread_join(th[t], NULL);
+    for(t=0; t<NUM_THREADS; t++) pthread_join(th[t], NULL);
 
     gettimeofday(&tv2, NULL);
     double elapsed = (tv2.tv_sec - tv1.tv_sec) + (tv2.tv_usec - tv1.tv_usec)/1e6;
